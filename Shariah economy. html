@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sharia Finance Companion — Alat Bantu Ekonomi Syariah</title>
+<style>
+  :root{
+    --bg:#f4f7f4; --card:#ffffff; --primary:#0b5137; --primary-2:#0f7a52;
+    --gold:#c9a227; --text:#16241d; --muted:#6b7a72; --line:#dde5df;
+    --ok:#15803d; --warn:#b45309; --bad:#b91c1c;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;
+    background:var(--bg); color:var(--text); line-height:1.6; padding-bottom:60px;
+  }
+  header{
+    background:linear-gradient(135deg,#0b5137,#0f7a52 60%,#128a5c);
+    color:#fff; padding:26px 20px 22px; text-align:center; position:relative;
+  }
+  header h1{font-size:1.5rem; letter-spacing:.3px}
+  header p{font-size:.86rem; opacity:.9; margin-top:6px}
+  .badge{
+    display:inline-block; margin-top:12px; font-size:.72rem; padding:5px 12px;
+    border-radius:99px; background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.28);
+  }
+  nav{
+    display:flex; gap:6px; overflow-x:auto; background:#fff; padding:10px 12px;
+    border-bottom:1px solid var(--line); position:sticky; top:0; z-index:20;
+    box-shadow:0 2px 8px rgba(0,0,0,.04);
+  }
+  nav button{
+    flex:0 0 auto; border:1px solid var(--line); background:#fff; color:var(--muted);
+    padding:8px 15px; border-radius:99px; font-size:.83rem; cursor:pointer;
+    font-weight:600; transition:.18s; white-space:nowrap;
+  }
+  nav button:hover{background:#eef5f0; color:var(--primary)}
+  nav button.active{background:var(--primary); color:#fff; border-color:var(--primary)}
+  main{max-width:900px; margin:0 auto; padding:20px 16px}
+  section{display:none; animation:fade .25s ease}
+  section.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .card{
+    background:var(--card); border:1px solid var(--line); border-radius:14px;
+    padding:18px; margin-bottom:16px; box-shadow:0 1px 3px rgba(0,0,0,.03);
+  }
+  h2{font-size:1.12rem; color:var(--primary); margin-bottom:4px}
+  h3{font-size:.98rem; color:var(--primary); margin:16px 0 8px}
+  .sub{font-size:.83rem; color:var(--muted); margin-bottom:12px}
+  label{display:block; font-size:.84rem; font-weight:600; margin:10px 0 5px}
+  input,select,textarea{
+    width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:9px;
+    font-size:.9rem; font-family:inherit; background:#fbfdfb; color:var(--text);
+  }
+  input:focus,select:focus{outline:2px solid #a7d7bf; border-color:var(--primary-2)}
+  button.btn{
+    background:var(--primary); color:#fff; border:none; padding:11px 20px;
+    border-radius:9px; font-size:.9rem; font-weight:600; cursor:pointer; margin-top:14px;
+    transition:.18s;
+  }
+  button.btn:hover{background:var(--primary-2)}
+  button.btn.ghost{background:#fff; color:var(--primary); border:1px solid var(--primary)}
+  button.btn.ghost:hover{background:#eef5f0}
+  button.btn.small{padding:7px 14px; font-size:.8rem; margin-top:0}
+  .grid{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+  @media(max-width:560px){.grid{grid-template-columns:1fr}}
+  .akad-list{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px}
+  .akad-list button{
+    border:1px solid var(--line); background:#fff; padding:8px 14px; border-radius:99px;
+    font-size:.82rem; cursor:pointer; font-weight:600; color:var(--muted); transition:.15s;
+  }
+  .akad-list button:hover{border-color:var(--primary-2); color:var(--primary)}
+  .akad-list button.active{background:var(--primary); color:#fff; border-color:var(--primary)}
+  ul{padding-left:20px; margin:8px 0}
+  li{margin-bottom:6px; font-size:.9rem}
+  .pill{
+    display:inline-block; font-size:.7rem; font-weight:700; padding:3px 9px;
+    border-radius:99px; margin-right:6px; letter-spacing:.2px;
+  }
+  .pill.ok{background:#dcfce7; color:var(--ok)}
+  .pill.warn{background:#fef3c7; color:var(--warn)}
+  .pill.bad{background:#fee2e2; color:var(--bad)}
+  .ref{
+    font-size:.78rem; color:var(--muted); background:#f4f7f4; border-left:3px solid var(--primary-2);
+    padding:8px 12px; border-radius:0 8px 8px 0; margin-top:8px;
+  }
+  .soal{border-bottom:1px dashed var(--line); padding:12px 0}
+  .soal:last-child{border-bottom:none}
+  .soal p{font-size:.89rem; font-weight:600; margin-bottom:8px}
+  .opt{display:flex; gap:8px; flex-wrap:wrap}
+  .opt label{
+    display:flex; align-items:center; gap:6px; font-weight:500; font-size:.82rem;
+    background:#fbfdfb; border:1px solid var(--line); padding:7px 13px; border-radius:99px;
+    cursor:pointer; margin:0;
+  }
+  .opt input{width:auto; margin:0}
+  .opt label:has(input:checked){background:#e6f4ec; border-color:var(--primary-2); color:var(--primary); font-weight:700}
+  .hasil{
+    margin-top:16px; padding:16px; border-radius:12px; border:1px solid var(--line);
+    background:#fbfdfb;
+  }
+  .skor{font-size:2rem; font-weight:800; line-height:1}
+  .skor-label{font-size:.82rem; color:var(--muted)}
+  .temuan{
+    border-left:4px solid var(--bad); background:#fff5f5; padding:10px 13px;
+    border-radius:0 9px 9px 0; margin-top:10px; font-size:.86rem;
+  }
+  .temuan.warn{border-color:var(--warn); background:#fffbeb}
+  .temuan strong{color:var(--bad)}
+  .temuan.warn strong{color:var(--warn)}
+  table{width:100%; border-collapse:collapse; font-size:.86rem; margin-top:10px}
+  th,td{padding:9px 10px; text-align:left; border-bottom:1px solid var(--line)}
+  th{background:#f4f7f4; font-size:.78rem; text-transform:uppercase; letter-spacing:.4px; color:var(--muted)}
+  td.num{text-align:right; font-variant-numeric:tabular-nums}
+  .total-row td{font-weight:800; color:var(--primary); background:#f0f8f3}
+  .log-item{
+    font-size:.82rem; padding:9px 12px; border-left:3px solid var(--primary-2);
+    background:#f8fbf9; border-radius:0 8px 8px 0; margin-bottom:7px;
+  }
+  .log-item time{color:var(--muted); font-size:.74rem; display:block}
+  .empty{text-align:center; color:var(--muted); font-size:.86rem; padding:26px 0}
+  .note{
+    font-size:.78rem; color:var(--muted); background:#fffbeb; border:1px solid #fde68a;
+    padding:11px 14px; border-radius:10px; margin-top:14px;
+  }
+  .search{margin-bottom:14px}
+  .tajuk{font-weight:800; color:var(--primary); font-size:.95rem; margin-top:4px}
+  footer{
+    text-align:center; font-size:.75rem; color:var(--muted); padding:28px 16px;
+    max-width:900px; margin:0 auto;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>☪ Sharia Finance Companion</h1>
+  <p>Alat bantu edukasi &amp; simulasi ekonomi syariah</p>
+  <div class="badge">⚠ Bukan pengganti fatwa DSN-MUI / Dewan Pengawas Syariah</div>
+</header>
+
+<nav>
+  <button class="active" data-tab="akad">📚 Akad Explorer</button>
+  <button data-tab="cek">✅ Cek Kepatuhan</button>
+  <button data-tab="sim">🧮 Simulator</button>
+  <button data-tab="zakat">🌙 Zakat</button>
+  <button data-tab="pustaka">📖 Ensiklopedia</button>
+  <button data-tab="log">🗂 Jejak Audit</button>
+</nav>
+
+<main>
+
+<!-- ============ TAB 1: AKAD EXPLORER ============ -->
+<section id="tab-akad" class="active">
+  <div class="card">
+    <h2>Akad Explorer</h2>
+    <p class="sub">Pilih akad untuk melihat definisi, rukun, dalil, dan fatwa yang mendasarinya.</p>
+    <div class="akad-list" id="akadList"></div>
+    <div id="akadDetail"></div>
+  </div>
+</section>
+
+<!-- ============ TAB 2: CEK KEPATUHAN ============ -->
+<section id="tab-cek">
+  <div class="card">
+    <h2>Cek Kepatuhan Syariah</h2>
+    <p class="sub">Jawab pertanyaan berikut sesuai transaksi Anda. Hasil bersifat indikatif, bukan fatwa.</p>
+    <label for="cekAkad">Jenis akad transaksi</label>
+    <select id="cekAkad"></select>
+    <div id="soalWrap" style="margin-top:10px"></div>
+    <button class="btn" id="btnCek">Periksa Kepatuhan</button>
+    <button class="btn ghost small" id="btnResetCek" style="margin-left:8px">Reset</button>
+    <div id="cekHasil"></div>
+  </div>
+</section>
+
+<!-- ============ TAB 3: SIMULATOR ============ -->
+<section id="tab-sim">
+  <div class="card">
+    <h2>Simulator Transaksi</h2>
+    <p class="sub">Hitung margin murabahah dan bagi hasil mudharabah secara transparan.</p>
+    <label for="simJenis">Pilih simulasi</label>
+    <select id="simJenis">
+      <option value="murabahah">Murabahah (jual beli + margin)</option>
+      <option value="mudharabah">Mudharabah (bagi hasil usaha)</option>
+    </select>
+    <div id="simForm" style="margin-top:6px"></div>
+    <button class="btn" id="btnHitung">Hitung</button>
+    <div id="simHasil"></div>
+  </div>
+</section>
+
+<!-- ============ TAB 4: ZAKAT ============ -->
+<section id="tab-zakat">
+  <div class="card">
+    <h2>Kalkulator Zakat Maal</h2>
+    <p class="sub">Nisab = 85 gram emas. Zakat = 2,5% dari harta yang telah mencapai nisab dan haul (1 tahun).</p>
+    <div class="grid">
+      <div>
+        <label for="zHarta">Total harta simpanan (Rp)</label>
+        <input type="number" id="zHarta" placeholder="100000000" value="100000000">
+      </div>
+      <div>
+        <label for="zEmas">Harga emas per gram (Rp)</label>
+        <input type="number" id="zEmas" placeholder="1500000" value="1500000">
+      </div>
+    </div>
+    <label style="display:flex;align-items:center;gap:8px;margin-top:14px;font-weight:500">
+      <input type="checkbox" id="zHaul" checked style="width:auto"> Harta sudah dimiliki selama 1 tahun (haul)
+    </label>
+    <button class="btn" id="btnZakat">Hitung Zakat</button>
+    <div id="zakatHasil"></div>
+    <div class="note">Zakat maal berbeda dengan zakat fitrah, zakat penghasilan, zakat perdagangan, dan zakat pertanian. Kalkulator ini khusus zakat maal (harta simpanan).</div>
+  </div>
+</section>
+
+<!-- ============ TAB 5: ENSIKLOPEDIA ============ -->
+<section id="tab-pustaka">
+  <div class="card">
+    <h2>Ensiklopedia Fatwa &amp; Regulasi</h2>
+    <p class="sub">Rujukan ringkas. Selalu verifikasi ke dokumen resmi DSN-MUI, OJK, atau otoritas terkait.</p>
+    <input class="search" type="text" id="cariPustaka" placeholder="🔍 Cari: murabahah, riba, ijarah, sukuk...">
+    <div id="pustakaList"></div>
+  </div>
+</section>
+
+<!-- ============ TAB 6: LOG ============ -->
+<section id="tab-log">
+  <div class="card">
+    <h2>Jejak Audit (Audit Trail)</h2>
+    <p class="sub">Setiap pemeriksaan dan simulasi dicatat agar dapat ditelusuri kembali.</p>
+    <button class="btn ghost small" id="btnExport">⬇ Ekspor Log (.txt)</button>
+    <button class="btn ghost small" id="btnClearLog" style="margin-left:8px">🗑 Hapus Log</button>
+    <div id="logWrap" style="margin-top:14px"></div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  Sharia Finance Companion — alat bantu edukasi.<br>
+  Keputusan syariah final wajib merujuk pada DSN-MUI, Dewan Pengawas Syariah, dan regulator berwenang.
+</footer>
+
+<script>
+/* ============================================================
+   0. UTILITAS
+   ============================================================ */
+const rupiah = n => "Rp " + Math.round(n).toLocaleString("id-ID");
+const pct = n => (Math.round(n * 100) / 100).toLocaleString("id-ID") + "%";
+
+/* ============================================================
+   1. BASIS DATA AKAD
+   ============================================================ */
+const AKAD = {
+  murabahah: {
+    nama: "Murabahah", arab: "مرابحة",
+    ringkas: "Jual beli dengan harga perolehan ditambah margin yang disepakati kedua pihak.",
+    definisi: "Murabahah adalah akad jual beli barang dengan menyatakan harga perolehan dan keuntungan (margin) yang disepakati oleh penjual dan pembeli. Penjual wajib memberi tahu harga pokok barang dan besarnya margin secara jujur dan transparan.",
+    rukun: [
+      "Penjual (ba'i) dan pembeli (musytari) yang cakap hukum",
+      "Objek barang yang halal dan jelas spesifikasinya",
+      "Harga pokok + margin yang disepakati dan dinyatakan terbuka",
+      "Ijab dan qabul (shighat) yang menunjukkan keridhaan"
+    ],
+    dalil: [
+      "QS. Al-Baqarah: 275 — \"...Allah menghalalkan jual beli dan mengharamkan riba...\"",
+      "Hadis riwayat Ibnu Majah — keharusan transparansi harga dalam jual beli amanah."
+    ],
+    fatwa: [
+      "Fatwa DSN-MUI No. 04/DSN-MUI/IV/2000 tentang Murabahah",
+      "Fatwa DSN-MUI No. 111/DSN-MUI/IX/2017 tentang Akad Jual Beli"
+    ],
+    tips: [
+      "Margin bersifat tetap dan tidak berubah karena keterlambatan pembayaran.",
+      "Denda keterlambatan diperbolehkan sebagai ta'zir, tetapi wajib disalurkan sebagai dana sosial — bukan pendapatan bank.",
+      "Penjual wajib memiliki barang (atau hak atas barang) sebelum menjualnya kepada nasabah."
+    ]
+  },
+  mudharabah: {
+    nama: "Mudharabah", arab: "مضاربة",
+    ringkas: "Kerja sama usaha: pemilik dana menyediakan modal, pengelola menyediakan keahlian.",
+    definisi: "Mudharabah adalah akad kerja sama usaha antara pemilik dana (shahibul maal) dan pengelola (mudharib), di mana keuntungan dibagi sesuai nisbah yang disepakati, sedangkan kerugian finansial ditanggung pemilik dana kecuali kerugian akibat kelalaian pengelola.",
+    rukun: [
+      "Shahibul maal dan mudharib yang cakap hukum",
+      "Modal yang jelas jumlahnya dan diserahkan tunai",
+      "Jenis usaha yang halal dan disepakati",
+      "Nisbah bagi hasil dalam bentuk persentase (bukan nominal tetap)",
+      "Ijab dan qabul"
+    ],
+    dalil: [
+      "QS. Al-Muzzammil: 20 — isyarat tentang perjalanan usaha dan berbagi keuntungan.",
+      "Hadis riwayat Ibnu Majah — Nabi ﷺ bersabda tentang keberkahan dalam syirkah dan mudharabah."
+    ],
+    fatwa: [
+      "Fatwa DSN-MUI No. 07/DSN-MUI/IV/2000 tentang Pembiayaan Mudharabah",
+      "Fatwa DSN-MUI No. 115/DSN-MUI/IX/2017 tentang Akad Mudharabah"
+    ],
+    tips: [
+      "Keuntungan dibagi sesuai nisbah persentase, bukan nominal tetap yang dijanjikan di muka.",
+      "Kerugian modal ditanggung shahibul maal; mudharib kehilangan tenaga dan waktunya.",
+      "Mudharib tidak boleh menjamin pengembalian modal secara sepihak — itu berpotensi menjadi riba."
+    ]
+  },
+  musyarakah: {
+    nama: "Musyarakah", arab: "مشاركة",
+    ringkas: "Kemitraan modal: semua pihak menyertakan modal dan berbagi untung-rugi sesuai porsi.",
+    definisi: "Musyarakah adalah akad kerja sama antara dua pihak atau lebih yang masing-masing menyertakan modal, dengan keuntungan dibagi sesuai nisbah yang disepakati dan kerugian ditanggung sesuai proporsi modal masing-masing.",
+    rukun: [
+      "Para mitra (syarik) yang cakap hukum",
+      "Modal dari masing-masing pihak, jelas jumlahnya",
+      "Porsi keuntungan (nisbah) yang disepakati",
+      "Porsi kerugian sesuai porsi modal",
+      "Ijab dan qabul"
+    ],
+    dalil: [
+      "QS. Shad: 24 — \"...dan sesungguhnya kebanyakan dari orang-orang yang berserikat itu sebagian mereka berbuat zalim kepada sebagian yang lain...\"",
+      "Hadis riwayat Abu Dawud — \"Aku (Allah) adalah pihak ketiga dalam dua orang yang berserikat, selama tidak ada pengkhianatan.\""
+    ],
+    fatwa: [
+      "Fatwa DSN-MUI No. 08/DSN-MUI/IV/2000 tentang Pembiayaan Musyarakah",
+      "Fatwa DSN-MUI No. 114/DSN-MUI/IX/2017 tentang Akad Musyarakah"
+    ],
+    tips: [
+      "Kerugian selalu dibagi proporsional terhadap modal, bukan berdasarkan nisbah keuntungan.",
+      "Nisbah keuntungan boleh berbeda dari porsi modal, asalkan disepakati.",
+      "Modal harus diserahkan kepada mitra usaha, bukan sekadar dijanjikan."
+    ]
+  },
+  ijarah: {
+    nama: "Ijarah", arab: "إجارة",
+    ringkas: "Sewa atas manfaat barang atau jasa dengan imbalan (ujrah) yang disepakati.",
+    definisi: "Ijarah adalah akad pemindahan hak guna (manfaat) atas suatu barang atau jasa dalam waktu tertentu dengan pembayaran sewa (ujrah), tanpa diikuti pemindahan kepemilikan barang itu sendiri.",
+    rukun: [
+      "Pemberi sewa (mu'jir) dan penyewa (musta'jir)",
+      "Objek sewa yang manfaatnya jelas dan halal",
+      "Ujrah (harga sewa) yang jelas dan disepakati",
+      "Durasi sewa yang jelas",
+      "Ijab dan qabul"
+    ],
+    dalil: [
+      "QS. At-Talaq: 6 — \"...jika mereka menyusukan anakmu untukmu, maka berikanlah kepada mereka upahnya...\"",
+      "Hadis riwayat Ibnu Majah — \"Berikanlah upah kepada pekerja sebelum keringatnya kering.\""
+    ],
+    fatwa: [
+      "Fatwa DSN-MUI No. 09/DSN-MUI/IV/2000 tentang Pembiayaan Ijarah",
+      "Fatwa DSN-MUI No. 112/DSN-MUI/IX/2017 tentang Ijarah"
+    ],
+    tips: [
+      "Objek sewa harus benar-benar dapat dimanfaatkan saat akad.",
+      "Perawatan dasar (kerusakan bukan karena penyewa) menjadi tanggung jawab pemberi sewa.",
+      "Ijarah Muntahiya Bittamlik (IMBT) harus memisahkan akad sewa dan akad pemindahan kepemilikan."
+    ]
+  },
+  salam: {
+    nama: "Salam", arab: "سلم",
+    ringkas: "Jual beli pesanan: harga dibayar di muka, barang diserahkan kemudian.",
+    definisi: "Salam adalah akad jual beli di mana harga dibayar tunai di muka, sedangkan barang yang dipesan diserahkan kemudian dengan spesifikasi yang jelas dan waktu penyerahan yang disepakati.",
+    rukun: [
+      "Penjual dan pembeli",
+      "Barang yang spesifikasinya jelas (jenis, ukuran, kualitas, jumlah)",
+      "Harga yang dibayar penuh di muka",
+      "Waktu penyerahan yang disepakati",
+      "Ijab dan qabul"
+    ],
+    dalil: [
+      "Hadis riwayat Bukhari & Muslim — Nabi ﷺ melarang jual beli gharar, tetapi membolehkan salam dengan spesifikasi jelas.",
+      "QS. Al-Baqarah: 282 — perintah mencatat transaksi utang-piutang."
+    ],
+    fatwa: [
+      "Fatwa DSN-MUI No. 05/DSN-MUI/IV/2000 tentang Jual Beli Salam"
+    ],
+    tips: [
+      "Harga harus dibayar lunas di awal — bukan sebagian.",
+      "Spesifikasi barang harus sangat rinci untuk menghindari gharar.",
+      "Tidak boleh menjual barang yang belum diterima (bai' al-ma'dum)."
+    ]
+  },
+  istishna: {
+    nama: "Istishna", arab: "استصناع",
+    ringkas: "Jual beli pesanan barang yang harus diproduksi/dibuat terlebih dahulu.",
+    definisi: "Istishna adalah akad jual beli barang dalam bentuk pesanan pembuatan barang tertentu dengan spesifikasi dan kriteria yang jelas, di mana pembayaran dapat dilakukan di muka, bertahap, atau di belakang.",
+    rukun: [
+      "Pembeli (mustashni') dan pembuat (shani')",
+      "Spesifikasi barang pesanan yang jelas",
+      "Harga dan skema pembayaran yang disepakati",
+      "Waktu penyerahan",
+      "Ijab dan qabul"
+    ],
+    dalil: [
+      "Praktik masyarakat Madinah yang diakui Nabi ﷺ dalam pembuatan barang pesanan.",
+      "Kaedah fiqh: \"Al-ashlu fil muamalah al-ibahah\" — hukum asal muamalah adalah boleh."
+    ],
+    fatwa: [
+      "Fatwa DSN-MUI No. 06/DSN-MUI/IV/2000 tentang Jual Beli Istishna'"
+    ],
+    tips: [
+      "Berbeda dengan salam: harga boleh dibayar bertahap atau di akhir.",
+      "Barang belum ada saat akad, tetapi spesifikasinya harus terukur.",
+      "Perubahan spesifikasi harus disepakati ulang oleh kedua pihak."
+    ]
+  },
+  wakalah: {
+    nama: "Wakalah bil Ujrah", arab: "وكالة",
+    ringkas: "Pelimpahan wewenang untuk mewakili suatu urusan, dengan atau tanpa imbalan.",
+    definisi: "Wakalah adalah pelimpahan kekuasaan oleh satu pihak kepada pihak lain dalam hal yang boleh diwakilkan. Bila disertai imbalan (ujrah), disebut wakalah bil ujrah.",
+    rukun: [
+      "Pemberi kuasa (muwakkil) dan penerima kuasa (wakil)",
+      "Objek yang diwakilkan dan boleh diwakilkan secara syariah",
+      "Wewenang yang jelas batasannya",
+      "Ijab dan qabul"
+    ],
+    dalil: [
+      "QS. Al-Kahfi: 19 — kisah pemuda yang mewakilkan pembelian makanan.",
+      "Hadis riwayat Bukhari — Nabi ﷺ mewakilkan kepada Abu Rafi' untuk suatu urusan."
+    ],
+    fatwa: [
+      "Fatwa DSN-MUI No. 113/DSN-MUI/IX/2017 tentang Akad Wakalah bil Ujrah"
+    ],
+    tips: [
+      "Wakil tidak menanggung risiko kerugian selama tidak lalai.",
+      "Ujrah harus jelas dan disepakati sejak awal.",
+      "Wakalah tidak boleh digunakan untuk melegalkan riba secara terselubung."
+    ]
+  },
+  rahn: {
+    nama: "Rahn", arab: "رهن",
+    ringkas: "Gadai syariah: menahan barang sebagai jaminan utang.",
+    definisi: "Rahn adalah menahan salah satu harta milik peminjam sebagai jaminan atas pinjaman yang diterimanya. Barang jaminan tersebut memiliki nilai ekonomis.",
+    rukun: [
+      "Pemberi gadai (rahin) dan penerima gadai (murtahin)",
+      "Marhun (barang jaminan) yang bernilai",
+      "Marhun bih (utang yang dijamin)",
+      "Ijab dan qabul"
+    ],
+    dalil: [
+      "QS. Al-Baqarah: 283 — \"Jika kamu dalam perjalanan dan tidak ada juru tulis, maka hendaklah ada barang tanggungan yang dipegang...\"",
+      "Hadis riwayat Bukhari — Nabi ﷺ pernah menggadaikan baju besinya."
+    ],
+    fatwa: [
+      "Fatwa DSN-MUI No. 25/DSN-MUI/III/2002 tentang Rahn",
+      "Fatwa DSN-MUI No. 26/DSN-MUI/III/2002 tentang Rahn Emas"
+    ],
+    tips: [
+      "Biaya pemeliharaan barang jaminan tidak boleh berbunga.",
+      "Barang jaminan tidak otomatis menjadi milik penerima gadai bila utang gagal bayar.",
+      "Penerima gadai tidak boleh memanfaatkan barang jaminan secara sepihak."
+    ]
+  },
+  kafalah: {
+    nama: "Kafalah", arab: "كفالة",
+    ringkas: "Penjaminan: seseorang menanggung kewajiban pihak lain.",
+    definisi: "Kafalah adalah akad di mana pihak penjamin (kafil) menanggung kewajiban yang menjadi tanggungan pihak lain (makful 'anhu) kepada pihak yang berpiutang (makful lahu).",
+    rukun: [
+      "Kafil (penjamin) dan makful 'anhu (yang dijamin)",
+      "Makful lahu (pihak yang berpiutang)",
+      "Objek jaminan yang jelas",
+      "Ijab dan qabul"
+    ],
+    dalil: [
+      "QS. Yusuf: 72 — tentang penjaminan dalam urusan harta.",
+      "Hadis riwayat Bukhari — Nabi ﷺ menanggung utang seorang sahabat."
+    ],
+    fatwa: [
+      "Fatwa DSN-MUI No. 11/DSN-MUI/IV/2000 tentang Kafalah"
+    ],
+    tips: [
+      "Kafil boleh meminta imbalan atas jasa, tetapi tidak boleh meminta bunga atas pokok utang.",
+      "Kafalah harus jelas batas nilai dan jangka waktunya.",
+      "Tidak boleh mengandung gharar berat dalam objek jaminan."
+    ]
+  },
+  wadiah: {
+    nama: "Wadiah", arab: "وديعة",
+    ringkas: "Titipan: harta dititipkan kepada pihak lain untuk dijaga.",
+    definisi: "Wadiah adalah akad penitipan barang atau dana kepada pihak lain yang dipercaya, dengan kewajiban pihak penerima titipan untuk menjaga dan mengembalikannya.",
+    rukun: [
+      "Muwaddi' (pemilik barang) dan mustauda' (penerima titipan)",
+      "Barang yang dititipkan, jelas dan halal",
+      "Ijab dan qabul"
+    ],
+    dalil: [
+      "QS. An-Nisa: 58 — \"Sesungguhnya Allah menyuruh kamu menyampaikan amanat kepada yang berhak menerimanya...\"",
+      "Hadis riwayat Abu Dawud — \"Tunaikanlah amanat kepada orang yang memberikannya kepadamu.\""
+    ],
+    fatwa: [
+      "Fatwa DSN-MUI No. 36/DSN-MUI/X/2002 tentang Sertifikat Wadiah Bank Indonesia",
+      "Fatwa DSN-MUI No. 02/DSN-MUI/IV/2000 tentang Tabungan"
+    ],
+    tips: [
+      "Wadiah yad amanah: tidak boleh dimanfaatkan penerima titipan.",
+      "Wadiah yad dhamanah: boleh dimanfaatkan dengan jaminan pengembalian penuh.",
+      "Bonus dari bank syariah bersifat sukarela, bukan bunga yang dijanjikan."
+    ]
+  }
+};
+
+/* ============================================================
+   2. SOAL CEK KEPATUHAN
+   ============================================================ */
+const SOAL = [
+  { id:"q1", teks:"Objek transaksi (barang/jasa) jelas spesifikasinya, jumlah, dan kualitasnya.",
+    risiko:"Gharar (ketidakjelasan objek)", tingkat:"bad",
+    ref:"Fatwa DSN-MUI No. 04/DSN-MUI/IV/2000 tentang Murabahah" },
+  { id:"q2", teks:"Harga, margin, atau nisbah bagi hasil disepakati di awal dan tidak diubah sepihak.",
+    risiko:"Gharar & potensi ketidakadilan", tingkat:"bad",
+    ref:"QS. An-Nisa: 29 — \"...kecuali dengan jalan perniagaan yang berlaku atas dasar suka sama suka...\"" },
+  { id:"q3", teks:"Tidak ada tambahan bunga atau bunga berbunga (compound interest) atas pokok.",
+    risiko:"Riba (bunga/interest)", tingkat:"bad",
+    ref:"QS. Al-Baqarah: 275 — \"...Allah menghalalkan jual beli dan mengharamkan riba...\"" },
+  { id:"q4", teks:"Denda keterlambatan (jika ada) bersifat ta'zir dan disalurkan sebagai dana sosial, bukan pendapatan.",
+    risiko:"Riba melalui denda berbasis bunga", tingkat:"warn",
+    ref:"Fatwa DSN-MUI No. 17/DSN-MUI/IX/2000 tentang Sanksi atas Nasabah Mampu yang Menunda-nunda Pembayaran" },
+  { id:"q5", teks:"Penjual/pemilik dana benar-benar memiliki atau menguasai objek sebelum akad berlangsung.",
+    risiko:"Jual beli objek yang belum dimiliki (bai' ma'dum)", tingkat:"bad",
+    ref:"Fatwa DSN-MUI No. 04/DSN-MUI/IV/2000 — penjual wajib memiliki barang sebelum menjual" },
+  { id:"q6", teks:"Tidak ada penggabungan dua akad dalam satu transaksi secara bersyarat.",
+    risiko:"Dua akad dalam satu akad (bai' wa salaf)", tingkat:"warn",
+    ref:"Hadis riwayat Ahmad — larangan dua akad dalam satu akad transaksi" },
+  { id:"q7", teks:"Objek transaksi halal dan bukan barang/jasa yang diharamkan syariat.",
+    risiko:"Objek haram", tingkat:"bad",
+    ref:"QS. Al-Maidah: 2 — \"...dan tolong-menolonglah kamu dalam kebaikan dan takwa, dan jangan tolong-menolong dalam berbuat dosa...\"" },
+  { id:"q8", teks:"Tidak ada unsur spekulasi murni atau untung-untungan (maisir).",
+    risiko:"Maisir (perjudian/spekulasi)", tingkat:"bad",
+    ref:"QS. Al-Maidah: 90 — larangan khamr, maisir, dan praktik serupa" },
+  { id:"q9", teks:"Kerugian pada akad bagi hasil ditanggung sesuai porsi modal, bukan dijamin sepihak.",
+    risiko:"Jaminan pengembalian modal (berpotensi riba)", tingkat:"bad",
+    ref:"Fatwa DSN-MUI No. 07/DSN-MUI/IV/2000 tentang Pembiayaan Mudharabah" },
+  { id:"q10", teks:"Kedua pihak sepakat secara sukarela (ridha) tanpa paksaan atau tekanan.",
+    risiko:"Tidak terpenuhinya keridhaan (ridha)", tingkat:"warn",
+    ref:"QS. An-Nisa: 29 — keridhaan sebagai syarat sah transaksi" }
+];
+
+/* ============================================================
+   3. ENSIKLOPEDIA PUSTAKA
+   ============================================================ */
+const PUSTAKA = [
+  { k:"Prinsip", j:"Riba", d:"Tambahan yang disyaratkan atas pokok utang tanpa imbalan yang sah. Diharamkan berdasarkan QS. Al-Baqarah: 275 dan QS. Ar-Rum: 39." },
+  { k:"Prinsip", j:"Gharar", d:"Ketidakjelasan dalam transaksi yang dapat menimbulkan sengketa. Dilarang karena hadis larangan jual beli gharar (Bukhari & Muslim)." },
+  { k:"Prinsip", j:"Maisir", d:"Spekulasi murni atau untung-untungan tanpa kepastian usaha nyata. Diharamkan berdasarkan QS. Al-Maidah: 90." },
+  { k:"Prinsip", j:"Maqashid Syariah", d:"Tujuan syariat: menjaga agama, jiwa, akal, keturunan, dan harta. Menjadi dasar semua aturan muamalah." },
+  { k:"Akad", j:"Murabahah", d:"Fatwa DSN-MUI No. 04/DSN-MUI/IV/2000 — jual beli dengan margin transparan." },
+  { k:"Akad", j:"Mudharabah", d:"Fatwa DSN-MUI No. 07/DSN-MUI/IV/2000 — bagi hasil antara pemilik modal dan pengelola usaha." },
+  { k:"Akad", j:"Musyarakah", d:"Fatwa DSN-MUI No. 08/DSN-MUI/IV/2000 — kemitraan modal dengan pembagian untung-rugi proporsional." },
+  { k:"Akad", j:"Ijarah", d:"Fatwa DSN-MUI No. 09/DSN-MUI/IV/2000 — sewa manfaat barang atau jasa." },
+  { k:"Akad", j:"Salam", d:"Fatwa DSN-MUI No. 05/DSN-MUI/IV/2000 — jual beli pesanan dengan pembayaran di muka." },
+  { k:"Akad", j:"Istishna", d:"Fatwa DSN-MUI No. 06/DSN-MUI/IV/2000 — jual beli barang pesanan hasil produksi." },
+  { k:"Akad", j:"Wakalah bil Ujrah", d:"Fatwa DSN-MUI No. 113/DSN-MUI/IX/2017 — pelimpahan wewenang dengan imbalan." },
+  { k:"Akad", j:"Rahn", d:"Fatwa DSN-MUI No. 25/DSN-MUI/III/2002 — gadai syariah atas barang jaminan." },
+  { k:"Akad", j:"Kafalah", d:"Fatwa DSN-MUI No. 11/DSN-MUI/IV/2000 — penjaminan kewajiban pihak lain." },
+  { k:"Akad", j:"Wadiah", d:"Fatwa DSN-MUI No. 02/DSN-MUI/IV/2000 — titipan dana dalam produk tabungan syariah." },
+  { k:"Regulasi", j:"UU No. 21 Tahun 2008", d:"Dasar hukum operasional perbankan syariah di Indonesia serta kedudukan DSN-MUI sebagai otoritas fatwa." },
+  { k:"Regulasi", j:"POJK No. 25 Tahun 2024", d:"Tata kelola syariah bagi BPRS dan UUS, termasuk kewajiban Dewan Pengawas Syariah." },
+  { k:"Regulasi", j:"POJK No. 20 Tahun 2025", d:"Ketentuan likuiditas Bank Umum Syariah dan Unit Usaha Syariah." },
+  { k:"Pasar Modal", j:"Sukuk", d:"Surat berharga syariah berbasis akad ijarah, musyarakah, atau mudharabah. Diatur dalam POJK tentang penerbitan efek syariah." },
+  { k:"Pasar Modal", j:"Saham Syariah", d:"Saham yang lolos screening DSN-MUI: bukan usaha haram, rasio utang berbasis bunga terbatas, dan pendapatan non-halal minimal." },
+  { k:"Sosial", j:"Zakat", d:"Kewajiban harta bagi muslim yang memenuhi nisab. Diatur dalam UU No. 23 Tahun 2011 tentang Pengelolaan Zakat." },
+  { k:"Sosial", j:"Wakaf", d:"Menahan harta untuk dimanfaatkan bagi kemaslahatan. Diatur dalam UU No. 41 Tahun 2004 tentang Wakaf." }
+];
+
+/* ============================================================
+   4. NAVIGASI TAB
+   ============================================================ */
+const navBtns = document.querySelectorAll("nav button");
+navBtns.forEach(b => {
+  b.addEventListener("click", () => {
+    navBtns.forEach(x => x.classList.remove("active"));
+    b.classList.add("active");
+    document.querySelectorAll("main section").forEach(s => s.classList.remove("active"));
+    document.getElementById("tab-" + b.dataset.tab).classList.add("active");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+});
+
+/* ============================================================
+   5. LOG / AUDIT TRAIL
+   ============================================================ */
+let LOG = [];
+function addLog(aksi, detail) {
+  LOG.unshift({ waktu: new Date().toLocaleString("id-ID"), aksi, detail });
+  renderLog();
+}
+function renderLog() {
+  const w = document.getElementById("logWrap");
+  if (!LOG.length) { w.innerHTML = '<div class="empty">Belum ada aktivitas tercatat.</div>'; return; }
+  w.innerHTML = LOG.map(l =>
+    '<div class="log-item"><time>' + l.waktu + '</time><strong>' + l.aksi + '</strong><br>' + l.detail + '</div>'
+  ).join("");
+}
+document.getElementById("btnClearLog").addEventListener("click", () => {
+  LOG = []; renderLog();
+});
+document.getElementById("btnExport").addEventListener("click", () => {
+  if (!LOG.length) { alert("Log masih kosong."); return; }
+  const isi = "SHARIA FINANCE COMPANION — JEJAK AUDIT\n" +
+    "Diekspor: " + new Date().toLocaleString("id-ID") + "\n" +
+    "=====================================\n\n" +
+    LOG.map((l, i) => (i + 1) + ". [" + l.waktu + "] " + l.aksi + "\n   " + l.detail).join("\n\n") +
+    "\n\nCATATAN: Dokumen ini bersifat edukatif, bukan fatwa resmi.";
+  const blob = new Blob([isi], { type: "text/plain;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "jejak-audit-syariah.txt";
+  a.click();
+  URL.revokeObjectURL(a.href);
+});
+renderLog();
+
+/* ============================================================
+   6. AKAD EXPLORER
+   ============================================================ */
+const akadKeys = Object.keys(AKAD);
+const akadListEl = document.getElementById("akadList");
+const akadDetailEl = document.getElementById("akadDetail");
+
+akadKeys.forEach((k, i) => {
+  const b = document.createElement("button");
+  b.textContent = AKAD[k].nama;
+  b.dataset.k = k;
+  if (i === 0) b.classList.add("active");
+  b.addEventListener("click", () => {
+    document.querySelectorAll("#akadList button").forEach(x => x.classList.remove("active"));
+    b.classList.add("active");
+    showAkad(k);
+  });
+  akadListEl.appendChild(b);
+});
+
+function showAkad(k) {
+  const a = AKAD[k];
+  akadDetailEl.innerHTML =
+    '<h3 style="font-size:1.25rem;margin-top:0">' + a.nama +
+      ' <span style="color:var(--gold);font-size:1.1rem">' + a.arab + '</span></h3>' +
+    '<p style="font-size:.88rem;color:var(--muted);margin-bottom:12px">' + a.ringkas + '</p>' +
+    '<p style="font-size:.9rem">' + a.definisi + '</p>' +
+
+    '<h3>🔹 Rukun &amp; Syarat</h3><ul>' +
+      a.rukun.map(r => "<li>" + r + "</li>").join("") + '</ul>' +
+
+    '<h3>📖 Dalil</h3><ul>' +
+      a.dalil.map(d => "<li>" + d + "</li>").join("") + '</ul>' +
+
+    '<h3>⚖️ Fatwa &amp; Regulasi</h3><ul>' +
+      a.fatwa.map(f => "<li>" + f + "</li>").join("") + '</ul>' +
+
+    '<h3>💡 Catatan Penting</h3><ul>' +
+      a.tips.map(t => "<li>" + t + "</li>").join("") + '</ul>' +
+
+    '<div class="note">Rangkuman ini bersifat edukatif. Untuk kepastian hukum syariah, rujuk dokumen fatwa asli dan konsultasikan dengan Dewan Pengawas Syariah.</div>';
+
+  addLog("Lihat akad", a.nama + " — " + a.ringkas);
+}
+showAkad(akadKeys[0]);
+
+/* ============================================================
+   7. CEK KEPATUHAN
+   ============================================================ */
+const cekAkadEl = document.getElementById("cekAkad");
+akadKeys.forEach(k => {
+  const o = document.createElement("option");
+  o.value = k; o.textContent = AKAD[k].nama;
+  cekAkadEl.appendChild(o);
+});
+
+const soalWrap = document.getElementById("soalWrap");
+function renderSoal() {
+  soalWrap.innerHTML = SOAL.map(s =>
+    '<div class="soal"><p>' + s.teks + '</p><div class="opt">' +
+      ['Ya','Tidak','Tidak yakin'].map(v =>
+        '<label><input type="radio" name="' + s.id + '" value="' + v + '"> ' + v + '</label>'
+      ).join("") +
+    '</div></div>'
+  ).join("");
+}
+renderSoal();
+
+document.getElementById("btnResetCek").addEventListener("click", () => {
+  renderSoal();
+  document.getElementById("cekHasil").innerHTML = "";
+});
+
+document.getElementById("btnCek").addEventListener("click", () => {
+  let ya = 0, terjawab = 0, temuan = [];
+  SOAL.forEach(s => {
+    const el = document.querySelector('input[name="' + s.id + '"]:checked');
+    if (!el) return;
+    terjawab++;
+    if (el.value === "Ya") ya++;
+    else {
+      temuan.push({
+        teks: s.teks,
+        risiko: s.risiko,
+        ref: s.ref,
+        tingkat: el.value === "Tidak yakin" ? "warn" : s.tingkat,
+        jawab: el.value
+      });
+    }
+  });
+
+  const hasilEl = document.getElementById("cekHasil");
+  if (terjawab < SOAL.length) {
+    hasilEl.innerHTML = '<div class="hasil"><strong style="color:var(--warn)">Lengkapi semua jawaban (' +
+      terjawab + '/' + SOAL.length + ' terjawab).</strong></div>';
+    return;
+  }
+
+  const skor = Math.round((ya / SOAL.length) * 100);
+  let label, warna;
+  if (skor >= 90) { label = "Sangat baik — indikasi kepatuhan tinggi"; warna = "var(--ok)"; }
+  else if (skor >= 60) { label = "Perlu perhatian — ada aspek yang harus diperbaiki"; warna = "var(--warn)"; }
+  else { label = "Risiko tinggi — banyak prinsip syariah belum terpenuhi"; warna = "var(--bad)"; }
+
+  let html =
+    '<div class="hasil">' +
+      '<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">' +
+        '<div><div class="skor" style="color:' + warna + '">' + skor + '</div>' +
+        '<div class="skor-label">dari 100</div></div>' +
+        '<div style="flex:1;min-width:180px"><strong style="color:' + warna + '">' + label + '</strong>' +
+        '<div style="font-size:.82rem;color:var(--muted);margin-top:4px">Akad yang diperiksa: <strong>' +
+          AKAD[cekAkadEl.value].nama + '</strong> · ' + ya + ' dari ' + SOAL.length + ' prinsip terpenuhi</div></div>' +
+      '</div>';
+
+  if (temuan.length) {
+    html += '<h3 style="margin-top:18px">Temuan yang perlu ditindaklanjuti</h3>';
+    temuan.forEach(t => {
+      html += '<div class="temuan ' + (t.tingkat === "warn" ? "warn" : "") + '">' +
+        '<strong>⚠ ' + t.risiko + '</strong><br>' + t.teks +
+        '<div class="ref" style="margin-top:6px">Rujukan: ' + t.ref + '</div></div>';
+    });
+  } else {
+    html += '<div class="temuan" style="border-color:var(--ok);background:#f0fdf4">' +
+      '<strong style="color:var(--ok)">✅ Semua prinsip dasar terpenuhi.</strong><br>' +
+      'Namun validasi akhir tetap memerlukan Dewan Pengawas Syariah.</div>';
+  }
+
+  html += '<div class="note">Hasil ini adalah skrining awal berbasis checklist prinsip, bukan fatwa. ' +
+    'Keputusan syariah final wajib merujuk pada DSN-MUI dan DPS.</div></div>';
+
+  hasilEl.innerHTML = html;
+  addLog("Cek kepatuhan",
+    "Akad " + AKAD[cekAkadEl.value].nama + " — skor " + skor + "/100, " +
+    (temuan.length ? temuan.length + " temuan" : "tidak ada temuan"));
+});
+
+/* ============================================================
+   8. SIMULATOR
+   ============================================================ */
+const simJenisEl = document.getElementById("simJenis");
+const simFormEl = document.getElementById("simForm");
+const simHasilEl = document.getElementById("simHasil");
+
+function renderSimForm() {
+  if (simJenisEl.value === "murabahah") {
+    simFormEl.innerHTML =
+      '<div class="grid">' +
+        '<div><label>Harga pokok barang (Rp)</label><input type="number" id="mHarga" value="100000000"></div>' +
+        '<div><label>Uang muka / DP (Rp)</label><input type="number" id="mDp" value="20000000"></div>' +
+        '<div><label>Margin (%)</label><input type="number" id="mMargin" value="10" step="0.1"></div>' +
+        '<div><label>Tenor (bulan)</label><input type="number" id="mTenor" value="24"></div>' +
+      '</div>';
+  } else {
+    simFormEl.innerHTML =
+      '<div class="grid">' +
+        '<div><label>Modal usaha (Rp)</label><input type="number" id="dModal" value="100000000"></div>' +
+        '<div><label>Keuntungan usaha (Rp)</label><input type="number" id="dUntung" value="15000000"></div>' +
+        '<div><label>Nisbah pemilik modal (%)</label><input type="number" id="dNisbah" value="60" step="0.1"></div>' +
+        '<div><label>Nisbah pengelola (%)</label><input type="number" id="dNisbah2" value="40" step="0.1" readonly style="background:#f0f4f1"></div>' +
+      '</div>' +
+      '<p style="font-size:.78rem;color:var(--muted);margin-top:8px">Nisbah pengelola otomatis = 100% − nisbah pemilik modal.</p>';
+    const dN = document.getElementById("dNisbah");
+    const dN2 = document.getElementById("dNisbah2");
+    dN.addEventListener("input", () => { dN2.value = (100 - (parseFloat(dN.value) || 0)).toFixed(1); });
+    dN2.value = (100 - (parseFloat(dN.value) || 0)).toFixed(1);
+  }
+  simHasilEl.innerHTML = "";
+}
+simJenisEl.addEventListener("change", renderSimForm);
+renderSimForm();
+
+document.getElementById("btnHitung").addEventListener("click", () => {
+  if (simJenisEl.value === "murabahah") {
+    const harga = parseFloat(document.getElementById("mHarga").value) || 0;
+    const dp = parseFloat(document.getElementById("mDp").value) || 0;
+    const margin = parseFloat(document.getElementById("mMargin").value) || 0;
+    const tenor = parseInt(document.getElementById("mTenor").value) || 1;
+
+    if (harga <= 0 || tenor <= 0) { simHasilEl.innerHTML = '<div class="hasil">Masukkan angka yang valid.</div>'; return; }
+    if (dp >= harga) { simHasilEl.innerHTML = '<div class="hasil">DP tidak boleh melebihi harga pokok.</div>'; return; }
+
+    const pokok = harga - dp;
+    const nilaiMargin = pokok * margin / 100;
+    const totalJual = pokok + nilaiMargin;
+    const angsuran = totalJual / tenor;
+
+    simHasilEl.innerHTML =
+      '<div class="hasil">' +
+      '<h3 style="margin-top:0">Rincian Murabahah</h3>' +
+      '<table>' +
+        '<tr><th>Komponen</th><th style="text-align:right">Nilai</th></tr>' +
+        '<tr><td>Harga pokok barang</td><td class="num">' + rupiah(harga) + '</td></tr>' +
+        '<tr><td>Uang muka (DP)</td><td class="num">− ' + rupiah(dp) + '</td></tr>' +
+        '<tr><td>Pokok pembiayaan</td><td class="num">' + rupiah(pokok) + '</td></tr>' +
+        '<tr><td>Margin (' + pct(margin) + ' × pokok)</td><td class="num">' + rupiah(nilaiMargin) + '</td></tr>' +
+        '<tr class="total-row"><td>Total harga jual</td><td class="num">' + rupiah(totalJual) + '</td></tr>' +
+        '<tr><td>Angsuran per bulan (' + tenor + '×)</td><td class="num"><strong>' + rupiah(angsuran) + '</strong></td></tr>' +
+      '</table>' +
+      '<div class="ref">Margin bersifat tetap (fixed) dan bukan bunga. Tidak ada penambahan karena keterlambatan — ' +
+      'denda (jika ada) harus berupa ta\'zir yang disalurkan sebagai dana sosial.<br>' +
+      'Rujukan: Fatwa DSN-MUI No. 04/DSN-MUI/IV/2000.</div>' +
+      '<div class="note">Simulasi ini belum memperhitungkan biaya administrasi, asuransi/takaful, dan notaris yang mungkin berlaku.</div>' +
+      '</div>';
+
+    addLog("Simulasi murabahah",
+      "Pokok " + rupiah(pokok) + ", margin " + pct(margin) + ", total " + rupiah(totalJual) +
+      ", angsuran " + rupiah(angsuran) + "/bulan");
+
+  } else {
+    const modal = parseFloat(document.getElementById("dModal").value) || 0;
+    const untung = parseFloat(document.getElementById("dUntung").value) || 0;
+    const n1 = parseFloat(document.getElementById("dNisbah").value) || 0;
+    const n2 = 100 - n1;
+
+    if (modal <= 0) { simHasilEl.innerHTML = '<div class="hasil">Masukkan modal yang valid.</div>'; return; }
+
+    const untungPemilik = untung * n1 / 100;
+    const untungPengelola = untung * n2 / 100;
+
+    let html = '<div class="hasil"><h3 style="margin-top:0">Rincian Mudharabah</h3>' +
+      '<table>' +
+        '<tr><th>Komponen</th><th style="text-align:right">Nilai</th></tr>' +
+        '<tr><td>Modal usaha (shahibul maal)</td><td class="num">' + rupiah(modal) + '</td></tr>' +
+        '<tr><td>Keuntungan usaha</td><td class="num">' + rupiah(untung) + '</td></tr>' +
+        '<tr><td>Nisbah pemilik modal</td><td class="num">' + pct(n1) + '</td></tr>' +
+        '<tr><td>Nisbah pengelola</td><td class="num">' + pct(n2) + '</td></tr>' +
+        '<tr><td>Bagi hasil pemilik modal</td><td class="num">' + rupiah(untungPemilik) + '</td></tr>' +
+        '<tr class="total-row"><td>Bagi hasil pengelola</td><td class="num">' + rupiah(untungPengelola) + '</td></tr>' +
+      '</table>';
+
+    if (untung < 0) {
+      html += '<div class="temuan" style="margin-top:12px"><strong>⚠ Kondisi rugi</strong><br>' +
+        'Dalam mudharabah, kerugian finansial ditanggung sepenuhnya oleh pemilik modal (' + rupiah(Math.abs(untung)) +
+        '), sedangkan pengelola kehilangan tenaga dan waktu. Kerugian baru menjadi tanggung jawab pengelola ' +
+        'jika terbukti ada kelalaian atau pelanggaran kesepakatan.</div>';
+    }
+
+    html += '<div class="ref">Nisbah harus dalam bentuk persentase, bukan nominal tetap yang dijanjikan di muka.<br>' +
+      'Rujukan: Fatwa DSN-MUI No. 07/DSN-MUI/IV/2000 tentang Pembiayaan Mudharabah.</div>' +
+      '<div class="note">Bagi hasil umumnya dihitung dari keuntungan bruto usaha sesuai kesepakatan, ' +
+      'bukan dari omzet atau modal.</div></div>';
+
+    simHasilEl.innerHTML = html;
+    addLog("Simulasi mudharabah",
+      "Modal " + rupiah(modal) + ", untung " + rupiah(untung) + ", nisbah " + pct(n1) + ":" + pct(n2) +
+      " → pemilik " + rupiah(untungPemilik) + ", pengelola " + rupiah(untungPengelola));
+  }
+});
+
+/* ============================================================
+   9. ZAKAT MAAL
+   ============================================================ */
+document.getElementById("btnZakat").addEventListener("click", () => {
+  const harta = parseFloat(document.getElementById("zHarta").value) || 0;
+  const emas = parseFloat(document.getElementById("zEmas").value) || 0;
+  const haul = document.getElementById("zHaul").checked;
+  const nisab = 85 * emas;
+  const hasilEl = document.getElementById("zakatHasil");
+
+  if (harta <= 0 || emas <= 0) {
+    hasilEl.innerHTML = '<div class="hasil">Masukkan angka yang valid.</div>';
+    return;
+  }
+
+  let html = '<div class="hasil"><h3 style="margin-top:0">Hasil Perhitungan Zakat Maal</h3><table>' +
+    '<tr><th>Komponen</th><th style="text-align:right">Nilai</th></tr>' +
+    '<tr><td>Total harta simpanan</td><td class="num">' + rupiah(harta) + '</td></tr>' +
+    '<tr><td>Nisab (85 gram × ' + rupiah(emas) + ')</td><td class="num">' + rupiah(nisab) + '</td></tr>';
+
+  let wajib = false, zakat = 0;
+  if (harta >= nisab && haul) {
+    wajib = true;
+    zakat = harta * 0.025;
+    html += '<tr><td>Kadar zakat</td><td class="num">2,5%</td></tr>' +
+      '<tr class="total-row"><td>Zakat yang wajib dibayar</td><td class="num">' + rupiah(zakat) + '</td></tr>';
+  }
+  html += '</table>';
+
+  if (wajib) {
+    html += '<div class="temuan" style="border-color:var(--ok);background:#f0fdf4;margin-top:12px">' +
+      '<strong style="color:var(--ok)">✅ Harta telah mencapai nisab dan haul — zakat wajib ditunaikan.</strong><br>' +
+      'Salurkan melalui lembaga amil zakat resmi (BAZNAS atau LAZ terdaftar) agar penyalurannya tepat sasaran.</div>';
+  } else if (harta < nisab) {
+    html += '<div class="temuan warn" style="margin-top:12px"><strong>⚠ Belum mencapai nisab</strong><br>' +
+      'Harta Anda ' + rupiah(harta) + ', sedangkan nisab ' + rupiah(nisab) + '. Belum wajib zakat maal, ' +
+      'tetapi tetap dianjurkan bersedekah.</div>';
+  } else {
+    html += '<div class="temuan warn" style="margin-top:12px"><strong>⚠ Haul belum terpenuhi</strong><br>' +
+      'Harta sudah mencapai nisab, tetapi belum dimiliki selama satu tahun hijriah penuh. ' +
+      'Zakat maal baru wajib setelah haul terpenuhi.</div>';
+  }
+
+  html += '<div class="ref">Rujukan: QS. At-Taubah: 103; UU No. 23 Tahun 2011 tentang Pengelolaan Zakat.</div></div>';
+  hasilEl.innerHTML = html;
+
+  addLog("Hitung zakat maal",
+    "Harta " + rupiah(harta) + ", nisab " + rupiah(nisab) + " → " +
+    (wajib ? "zakat " + rupiah(zakat) : "belum wajib"));
+});
+
+/* ============================================================
+   10. ENSIKLOPEDIA — PENCARIAN
+   ============================================================ */
+const pustakaListEl = document.getElementById("pustakaList");
+function renderPustaka(q) {
+  const key = (q || "").toLowerCase();
+  const data = PUSTAKA.filter(p =>
+    p.j.toLowerCase().includes(key) || p.d.toLowerCase().includes(key) || p.k.toLowerCase().includes(key)
+  );
+  if (!data.length) {
+    pustakaListEl.innerHTML = '<div class="empty">Tidak ada hasil untuk "' + q + '".</div>';
+    return;
+  }
+  pustakaListEl.innerHTML = data.map(p =>
+    '<div style="padding:12px 0;border-bottom:1px solid var(--line)">' +
+      '<span class="pill ' + (p.k === "Regulasi" ? "warn" : "ok") + '">' + p.k + '</span>' +
+      '<span class="tajuk">' + p.j + '</span>' +
+      '<p style="font-size:.87rem;margin-top:4px">' + p.d + '</p>' +
+    '</div>'
+  ).join("");
+}
+renderPustaka("");
+
+let cariTimer;
+document.getElementById("cariPustaka").addEventListener("input", e => {
+  clearTimeout(cariTimer);
+  const v = e.target.value;
+  cariTimer = setTimeout(() => {
+    renderPustaka(v);
+    if (v.trim().length > 2) addLog("Cari pustaka", '"' + v + '"');
+  }, 300);
+});
+</script>
+</body>
+</html>
